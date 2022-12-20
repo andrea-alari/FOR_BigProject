@@ -21,7 +21,7 @@ def solve(instance):
 
 
 inst = load_instance("instances/instance_1.json")
-res = load_result("instance_2.txt")
+res = load_result("solutions/instance_2.txt")
 
 obj = solve(inst)
 
