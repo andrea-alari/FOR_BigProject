@@ -118,7 +118,7 @@ def linear_relaxation(data):
             break  # No violated inequality was found, leave the loop
         i, j = pair
         m.add_constr(X[i][j] <= Y[j])
-    print_result(m, X, Y, F, N, points)
+    #print_result(m, X, Y, F, N, points)
 
     return m.objective_value
 
