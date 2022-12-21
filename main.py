@@ -18,7 +18,7 @@ def load_result(filename):
 
 
 def solve(instance):
-    return Solutions.linear_relaxation(instance)
+    return Solutions.linear_relaxation2(instance)
 
 
 def write_results():
@@ -32,6 +32,7 @@ def write_results():
         out.write("instance {instance:} :value-> {value:2f}      exec_time ->{time:2f}\n".format(instance=i, value=res,
                                                                                                  time=(et - st)))
     out.close()
+
 
 
 write_results()
