@@ -168,34 +168,70 @@ def min_cut(data):
 
     m.optimize()
 
+    last_value = m.objective_value
+    '''
+    while True:
+        if m.objective_value is None:
+            return last_value
+        else : last_value = m.objective_value
+        for j in N:
+            if Y[j].x > 0.5:
+                m.add_constr(Y[j] == 0)
+        m.optimize()
+    
+    pair = []
+    counter = 0
+    while counter < p:
+        if m.objective_value is None:
+            return last_value
+        else: last_value = m.objective_value
+
+        for i in N:
+            for j in N:
+                min_val = 0
+                if X[i][j].x > 1e-5:
+                    cost = -1 * (dist[i, j] * X[i][j].x - F[i][j].x * Q * b)
+                    if cost > min_val:
+                        min_val = cost
+                        removable = {'x': i, 'y': j}
+            pair.append(removable)
+
+        while len(pair) > 0:
+            elem = pair.pop()
+            i = elem['x']
+            j = elem['y']
+            m.add_constr(X[i][j] == 0)
+        m.optimize()
+        counter = counter + 1
+    
+
+    '''
     counter = 0
     for i in N:
         if Y[i].x > 1e-5:
             counter = counter + 1
-    print_result(m, X, Y, F, N, points)
-
-    last_value = m.objective_value
+    #print_result(m, X, Y, F, N, points)
     while counter > p:
-        if Y[0].x is None:
-            return last_value
-        else:
-            last_value = m.objective_value
+        last_value = m.objective_value
         min_val = 0
         removable = -1
         for j in N:
             if Y[j].x > 1e-5:
                 for i in N:
-                    cost = -1 * (dist[i, j] - F[i][j].x * Q * b)
+                    cost = -1 * (dist[i, j]* X[i][j].x - F[i][j].x * Q * b)
                     if cost > min_val:
                         min_val = cost
                         removable = j
         m.add_constr(Y[removable] == 0)
         print(removable)
         m.optimize()
+        if m.objective_value is None:
+            return last_value
         for i in N:
             if Y[i].x > 1e-5:
                 counter = counter + 1
-        print_result(m, X, Y, F, N, points)
+        #print_result(m, X, Y, F, N, points)
+
     return m.objective_value
 
 
@@ -264,7 +300,7 @@ def linear_relaxation2(data):
             j = elem['y']
             m.add_constr(X[i][j] <= Y[j])
 
-    # print_result(m, X, Y, F, N, points)
+    print_result(m, X, Y, F, N, points)
 
     return m.objective_value
 

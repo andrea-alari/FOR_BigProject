@@ -18,7 +18,7 @@ def load_result(filename):
 
 
 def solve(instance):
-    return Solutions.linear_relaxation2(instance)
+    return Solutions.min_cut(instance)
 
 
 def write_results():
@@ -29,7 +29,7 @@ def write_results():
         st = time.time()
         res = solve(inst)
         et = time.time()
-        out.write("{instance:},{value:2f},{time:2f}\n".format(instance=i, value=res, time=(et - st)))
+        out.write("{instance:},{value:},{time:}\n".format(instance=i, value=res, time=(et - st)))
     out.close()
 
 
