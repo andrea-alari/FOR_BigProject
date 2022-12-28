@@ -1,3 +1,5 @@
+import math
+
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -26,3 +28,9 @@ def print_result(m, x, y, f, N, points):
     plt.figure(1, figsize=(14, 14))
     nx.draw_networkx(g, font_size=11, pos=nodes)
     plt.show()
+
+def distance_calc(points):
+    N = range(len(points))
+    return {(i, j): math.sqrt((points[i][0] - points[j][0]) ** 2 +
+                              (points[i][1] - points[j][1]) ** 2)
+            for i in N for j in N}

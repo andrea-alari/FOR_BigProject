@@ -1,6 +1,7 @@
 import json
 import time
 import Solutions
+import MinCut
 
 
 # Reads a .json instance and returns it in a dictionary
@@ -18,7 +19,11 @@ def load_result(filename):
 
 
 def solve(instance):
-    return Solutions.min_cut(instance)
+    st = time.time()
+    res = MinCut.min_cut2(instance)
+    et = time.time()
+    print(et -st)
+    return res
 
 
 def write_results():
@@ -33,8 +38,7 @@ def write_results():
     out.close()
 
 
-write_results()
-'''
+#write_results()
 inst = load_instance("instances/instance_4.json")
 res = load_result("solutions/instance_4.txt")
 
@@ -45,4 +49,3 @@ gap = 100 * (obj - res) / res
 print("result: {}".format(obj))
 print("expected: {}".format(res))
 print("gap: {}".format(gap))
-'''
