@@ -38,7 +38,7 @@ def min_cut(data):
 
     for i in N:
         m.add_constr(mip.xsum(X[i][j] for j in N) <= 1)
-        m.add_constr(mip.xsum(X[j][i] for j in N) <= 500 * Y[i])
+        m.add_constr(mip.xsum(X[j][i] for j in N) <= n * Y[i])
 
     for j in N:
         m.add_constr(mip.xsum(F[i][j] for i in N) <= M / Q * Y[j])
@@ -135,11 +135,14 @@ def min_cut2(data):
     # TODO this could be done in a faster way
     dist = distance_calc(points)
 
+    avg = math.ceil(n / p)
     m = mip.Model()
-
+    m.verbose = 0
     X = [[m.add_var(lb=0, ub=1) for _ in N] for _ in N]
     Y = [m.add_var(lb=0, ub=1) for _ in N]
     F = [[m.add_var() for _ in N] for _ in N]
+    prod = M / Q
+
 
     # constraints
     m.add_constr(mip.xsum(Y[i] for i in N) == p)
@@ -150,10 +153,10 @@ def min_cut2(data):
 
     for i in N:
         m.add_constr(mip.xsum(X[i][j] for j in N) <= 1)
-        m.add_constr(mip.xsum(X[j][i] for j in N) <= 500 * Y[i])
+        m.add_constr(mip.xsum(X[j][i] for j in N) <= avg * Y[i])
 
     for j in N:
-        m.add_constr(mip.xsum(F[i][j] for i in N) <= M / Q * Y[j])
+        m.add_constr(mip.xsum(F[i][j] for i in N) <= prod)
         m.add_constr(mip.xsum(a[i] * F[i][j] for i in N) <= kmax * mip.xsum(F[i][j] for i in N))
         m.add_constr(mip.xsum(a[i] * F[i][j] for i in N) >= kmin * mip.xsum(F[i][j] for i in N))
 
@@ -161,8 +164,6 @@ def min_cut2(data):
         mip.xsum(F[i][j] * Q * b - dist[i, j] * X[i][j] for j in N for i in N))
 
     m.optimize()
-
-    last_value = m.objective_value
 
     counter = 0
     for i in N:
@@ -172,16 +173,16 @@ def min_cut2(data):
     while counter > p:
         last_value = m.objective_value
         pairs = []
+
         for j in N:
             if Y[j].x > 1e-5:
                 # consider total cost of plant -> gap decreases, but it looks like a nightmare and there are even more
                 # double arcs
-                cost = mip.xsum(F[i][j].x * Q * b - dist[i, j] * X[i][j].x for i in N)
-                pairs.append({'y': j, 'cost': cost.x})
+                cost = sum(F[i][j].x * Q * b - dist[i, j] for i in N if X[i][j].x > 1e-5)
+                pairs.append({'y': j, 'cost': cost})
         pairs.sort(key=lambda elem: elem['cost'])
 
         # removing first counter - p / 2 implants
-
         for i in range(math.ceil((counter - p) / 2)):
             m.add_constr(Y[pairs[i]['y']] == 0)
 
@@ -193,15 +194,7 @@ def min_cut2(data):
             if Y[i].x > 1e-5:
                 counter = counter + 1
         # print_result(m, X, Y, F, N, points)
-    '''   
-    max = 0;
-    for i in N:
-        for j in N:
-            if X[i][j].x > max:
-                max = X[i][j].x
-                ind = {'x': i, 'y': j}
-            m.add_constr(X[ind['x']][ind['y']] == 1)
     m.optimize()
     print_result(m, X, Y, F, N, points)
-    '''
+
     return m.objective_value

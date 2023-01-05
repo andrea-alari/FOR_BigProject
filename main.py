@@ -1,6 +1,6 @@
 import json
 import time
-import Solutions
+import Linear_Relaxation
 import MinCut
 
 
@@ -19,11 +19,7 @@ def load_result(filename):
 
 
 def solve(instance):
-    st = time.time()
-    res = MinCut.min_cut2(instance)
-    et = time.time()
-    print(et -st)
-    return res
+    return MinCut.min_cut2(instance)
 
 
 def write_results():
@@ -32,6 +28,7 @@ def write_results():
     for i in range(1, 11):
         inst = load_instance("instances/instance_{}.json".format(i))
         st = time.time()
+        print("instance {}".format(i))
         res = solve(inst)
         et = time.time()
         out.write("{instance:},{value:},{time:}\n".format(instance=i, value=res, time=(et - st)))
@@ -39,10 +36,16 @@ def write_results():
 
 
 #write_results()
-inst = load_instance("instances/instance_4.json")
-res = load_result("solutions/instance_4.txt")
+
+
+inst = load_instance("instances/instance_1.json")
+res = load_result("solutions/instance_1.txt")
+st = time.time()
 
 obj = solve(inst)
+
+et = time.time()
+print(et - st)
 
 gap = 100 * (obj - res) / res
 

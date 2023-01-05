@@ -21,7 +21,7 @@ def int_solve(data):
     dist = distance_calc(points)
 
     m = mip.Model()
-
+    m.verbose = 0
     X = [[m.add_var(var_type=mip.BINARY) for _ in N] for _ in N]
     Y = [m.add_var(var_type=mip.BINARY) for _ in N]
     F = [[m.add_var() for _ in N] for _ in N]
@@ -35,7 +35,7 @@ def int_solve(data):
 
     for i in N:
         m.add_constr(mip.xsum(X[i][j] for j in N) <= 1)
-        m.add_constr(mip.xsum(X[j][i] for j in N) <= 500 * Y[i])
+        m.add_constr(mip.xsum(X[j][i] for j in N) <= n * Y[i])
 
     for j in N:
         m.add_constr(mip.xsum(F[i][j] for i in N) <= M / Q * Y[j])
@@ -47,8 +47,9 @@ def int_solve(data):
 
     m.optimize()
     print(m.objective_value)
-
-    print_result(m, X, Y, F, N, points)
+    for i in N:
+        print(Y[i].x)
+    #print_result(m, X, Y, F, N, points)
 
     return m.objective_value
 
@@ -79,16 +80,30 @@ def linear_relaxation(data):
     # constraints
     m.add_constr(mip.xsum(Y[i] for i in N) == p)
 
+    maxFarms = []
+
+    for i in N:
+        count = 0
+        for j in N:
+            if c[j] < M / Q:
+                if dist[i, j] < c[j] * Q * b:
+                    count = count + 1
+            else:
+                if dist[i, j] < M * b:
+                    count = count + 1
+                else:
+                    m.add_constr(X[j][i] == 0)
+        maxFarms.append(count)
     for i in N:
         for j in N:
             m.add_constr(F[i][j] <= c[i] * X[i][j])
 
     for i in N:
         m.add_constr(mip.xsum(X[i][j] for j in N) <= 1)
-        m.add_constr(mip.xsum(X[j][i] for j in N) <= 500 * Y[i])
+        m.add_constr(mip.xsum(X[j][i] for j in N) <= maxFarms[i] * Y[i])
 
     for j in N:
-        m.add_constr(mip.xsum(F[i][j] for i in N) <= M / Q * Y[j])
+        m.add_constr(mip.xsum(F[i][j] for i in N) <= M / Q)
         m.add_constr(mip.xsum(a[i] * F[i][j] for i in N) <= kmax * mip.xsum(F[i][j] for i in N))
         m.add_constr(mip.xsum(a[i] * F[i][j] for i in N) >= kmin * mip.xsum(F[i][j] for i in N))
 
@@ -170,26 +185,6 @@ def linear_relaxation2(data):
 
     m.optimize()
     print(m.objective_value)
-
-    eps = 1e-5
-
-    while True:
-        m.optimize()
-        pair = []  # Initialize pair to None, leave the loops
-
-        for i in N:
-            for j in N:
-                # Check if inequality is violated (Add an epsilon to avoid numerical problems)
-                if X[i][j].x > Y[j].x + eps:
-                    pair.append({'x': i, 'y': j})
-        if not len(pair):
-            break
-
-        while len(pair) > 0:
-            elem = pair.pop()
-            i = elem['x']
-            j = elem['y']
-            m.add_constr(X[i][j] <= Y[j])
 
     #print_result(m, X, Y, F, N, points)
 
