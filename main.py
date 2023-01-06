@@ -1,7 +1,6 @@
 import json
 import time
-import Linear_Relaxation
-import MinCut
+import ThinModel
 
 
 # Reads a .json instance and returns it in a dictionary
@@ -19,7 +18,7 @@ def load_result(filename):
 
 
 def solve(instance):
-    return MinCut.min_cut2(instance)
+    return ThinModel.thin_model(instance)
 
 
 def write_results():
@@ -35,10 +34,10 @@ def write_results():
     out.close()
 
 
-#write_results()
+write_results()
 
-
-inst = load_instance("instances/instance_1.json")
+'''
+inst = load_instance("instances/instance_10.json")
 res = load_result("solutions/instance_1.txt")
 st = time.time()
 
@@ -52,3 +51,4 @@ gap = 100 * (obj - res) / res
 print("result: {}".format(obj))
 print("expected: {}".format(res))
 print("gap: {}".format(gap))
+'''
