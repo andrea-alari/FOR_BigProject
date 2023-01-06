@@ -34,21 +34,16 @@ def write_results():
     out.close()
 
 
-write_results()
+# write_results()
 
-'''
-inst = load_instance("instances/instance_10.json")
-res = load_result("solutions/instance_1.txt")
+inst = load_instance("instances/instance_1.json")
 st = time.time()
-
 obj = solve(inst)
-
-et = time.time()
-print(et - st)
-
+print("--- RESULT ---")
+print("result(€) : {0:10.2f}".format(obj))
+print("time(s) : {0:10.5f}".format(time.time() - st))
+res = load_result("solutions/instance_1.txt")
 gap = 100 * (obj - res) / res
-
-print("result: {}".format(obj))
-print("expected: {}".format(res))
 print("gap: {}".format(gap))
-'''
+print("expected: {}".format(res))
+

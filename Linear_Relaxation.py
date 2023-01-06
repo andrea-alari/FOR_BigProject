@@ -1,6 +1,4 @@
 import mip
-import math
-
 import Helper_functions
 from Helper_functions import print_result, distance_calc
 

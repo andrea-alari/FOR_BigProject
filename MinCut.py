@@ -13,7 +13,6 @@ def min_cut(data):
     for i in N:
         if Y[i].x > 1e-5:
             counter = counter + 1
-    # print_result(m, X, Y, F, N, points)
     while counter > p:
         last_value = m.objective_value
         pairs = []
@@ -37,7 +36,6 @@ def min_cut(data):
         for i in N:
             if Y[i].x > 1e-5:
                 counter = counter + 1
-        # print_result(m, X, Y, F, N, points)
     m.optimize()
     Helper_functions.print_result(m, X, Y, F, N, points)
 

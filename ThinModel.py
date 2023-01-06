@@ -36,8 +36,6 @@ def thin_model(data):
     N = range(n)
 
     dist = distance_calc(points)
-
-    avg = math.ceil(n / p)
     prod = M / Q
 
     m = mip.Model()
