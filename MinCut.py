@@ -3,6 +3,7 @@ import Helper_functions
 
 
 def min_cut(data):
+
     p = data["p"]
     Q = data["Q"]
     b = data["b"]
